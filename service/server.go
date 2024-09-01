@@ -12,14 +12,14 @@ func Run(configFile string) (func(), error) {
 		slog.Error("build injector failed", "err", err)
 		return nil, err
 	}
-
+	
 	// 初始化日志
 	slog.SetDefault(injector.Logger.Logger)
-
+	
 	// 定时任务
-	renewTask := injector.RenewTask
-	go renewTask.Run()
-
+	//renewTask := injector.RenewTask
+	//go renewTask.Run()
+	
 	return func() {
 		clearFunc()
 	}, nil

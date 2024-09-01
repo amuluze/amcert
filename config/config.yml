@@ -1,0 +1,13 @@
+log:
+  output: /data/amprobe/logs/amcert/cert.log
+  level: info
+  rotation: 1
+  max_age: 7
+certificates:
+  - renew_before:
+    check_interval:
+    contact_email:
+    cert:
+    domains:
+      - amuluze.com
+      - *.amuluze.com

@@ -22,19 +22,19 @@ func Create(filename string) (*Config, error) {
 			return
 		}
 	}(fp)
-
+	
 	cfg := new(Config)
 	cfg.filename = filename
 	if err := cfg.loadDefault(); err != nil {
 		return nil, err
 	}
-
+	
 	if data, err := io.ReadAll(fp); err != nil {
 		return nil, err
 	} else if err := yaml.Unmarshal(data, cfg); err != nil {
 		return nil, err
 	}
-
+	
 	return cfg, nil
 }
 
@@ -54,7 +54,7 @@ func (c *Config) loadDefault() error {
 	c.Log.Level = "info"
 	c.Log.Rotation = 1
 	c.Log.MaxAge = 7
-
+	
 	return nil
 }
 

@@ -6,24 +6,24 @@ package service
 
 import (
 	"log/slog"
-
+	
 	"github.com/spf13/viper"
 )
 
 type Config struct {
-	Log                Log                 `yaml:"log"`
-	CertificateConfigs []CertificateConfig `yaml:"certificates"`
+	Log          Log           `yaml:"log"`
+	Certificates []Certificate `yaml:"certificates"`
 }
 
 func NewConfig(configFile string) (*Config, error) {
 	config := &Config{}
-
+	
 	viper.SetConfigFile(configFile)
 	if err := viper.ReadInConfig(); err != nil {
 		slog.Error("read config error", "err", err)
 		return nil, err
 	}
-
+	
 	if err := viper.Unmarshal(config); err != nil {
 		slog.Error("parse config error", "error", err)
 		return nil, err
@@ -38,7 +38,7 @@ type Log struct {
 	MaxAge   int    `yaml:"max_age"`
 }
 
-type CertificateConfig struct {
+type Certificate struct {
 	RenewBefore   int      `yaml:"renew_before"`
 	CheckInterval int      `yaml:"check_interval"`
 	ContactEmail  string   `yaml:"contact_email"`

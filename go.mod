@@ -1,6 +1,6 @@
 module github.com/amuluze/amcert
 
-go 1.21.9
+go 1.22
 
 toolchain go1.22.6
 
@@ -12,6 +12,8 @@ require (
 	github.com/patrickmn/go-cache v2.1.0+incompatible
 	github.com/spf13/viper v1.19.0
 	github.com/takama/daemon v1.0.0
+	go.etcd.io/bbolt v1.3.11
+	gopkg.in/yaml.v2 v2.4.0
 )
 
 require (

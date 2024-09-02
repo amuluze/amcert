@@ -15,7 +15,7 @@ func BuildInjector(configFile string) (*Injector, func(), error) {
 	wire.Build(
 		NewConfig,
 		NewLogger,
-		NewRenewTask,
+		NewTimedTask,
 		InjectorSet,
 	)
 	return new(Injector), nil, nil

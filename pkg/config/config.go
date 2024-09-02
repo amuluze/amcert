@@ -47,6 +47,7 @@ type Config struct {
 		Rotation int    `yaml:"rotation"`
 		MaxAge   int    `yaml:"max_age"`
 	} `yaml:"log"`
+	StoragePath string `yaml:"storage_path"`
 }
 
 func (c *Config) loadDefault() error {
@@ -54,6 +55,7 @@ func (c *Config) loadDefault() error {
 	c.Log.Level = "info"
 	c.Log.Rotation = 1
 	c.Log.MaxAge = 7
+	c.StoragePath = "/etc/amcert/storage.db"
 	
 	return nil
 }

@@ -5,7 +5,6 @@
 package service
 
 import (
-	"github.com/amuluze/amcert/service/task"
 	"github.com/amuluze/amutool/logger"
 	"github.com/google/wire"
 )
@@ -13,15 +12,15 @@ import (
 var InjectorSet = wire.NewSet(NewInjector)
 
 type Injector struct {
-	Config    *Config
-	Logger    *logger.Logger
-	RenewTask task.ITask
+	Config *Config
+	Logger *logger.Logger
+	Task   *TimedTask
 }
 
-func NewInjector(config *Config, task task.ITask, logx *logger.Logger) (*Injector, error) {
+func NewInjector(config *Config, task *TimedTask, logx *logger.Logger) (*Injector, error) {
 	return &Injector{
-		Config:    config,
-		Logger:    logx,
-		RenewTask: task,
+		Config: config,
+		Logger: logx,
+		Task:   task,
 	}, nil
 }

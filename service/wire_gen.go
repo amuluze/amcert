@@ -13,9 +13,9 @@ func BuildInjector(configFile string) (*Injector, func(), error) {
 	if err != nil {
 		return nil, nil, err
 	}
-	iTask := NewRenewTask()
-	logger := NewLogger()
-	injector, err := NewInjector(config, iTask, logger)
+	timedTask := NewTimedTask()
+	logger := NewLogger(config)
+	injector, err := NewInjector(config, timedTask, logger)
 	if err != nil {
 		return nil, nil, err
 	}

@@ -11,8 +11,8 @@ import (
 )
 
 type Config struct {
-	Log          Log           `yaml:"log"`
-	Certificates []Certificate `yaml:"certificates"`
+	Log         Log    `yaml:"log"`
+	StoragePath string `yaml:"storage_path"`
 }
 
 func NewConfig(configFile string) (*Config, error) {
@@ -36,12 +36,4 @@ type Log struct {
 	Level    string `yaml:"level"`
 	Rotation int    `yaml:"rotation"`
 	MaxAge   int    `yaml:"max_age"`
-}
-
-type Certificate struct {
-	RenewBefore   int      `yaml:"renew_before"`
-	CheckInterval int      `yaml:"check_interval"`
-	ContactEmail  string   `yaml:"contact_email"`
-	Cert          string   `yaml:"cert"`
-	Domains       []string `yaml:"domains"`
 }

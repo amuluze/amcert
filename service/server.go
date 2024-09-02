@@ -4,7 +4,10 @@
 // Description:
 package service
 
-import "log/slog"
+import (
+	"github.com/amuluze/amcert/pkg/db"
+	"log/slog"
+)
 
 func Run(configFile string) (func(), error) {
 	injector, clearFunc, err := BuildInjector(configFile)
@@ -13,12 +16,19 @@ func Run(configFile string) (func(), error) {
 		return nil, err
 	}
 	
+	// 初始化 db
+	err = db.Init(injector.Config.StoragePath)
+	if err != nil {
+		slog.Error("init db failed", "err", err)
+		return nil, err
+	}
+	
 	// 初始化日志
 	slog.SetDefault(injector.Logger.Logger)
 	
 	// 定时任务
-	//renewTask := injector.RenewTask
-	//go renewTask.Run()
+	timedTask := injector.Task
+	go timedTask.Run()
 	
 	return func() {
 		clearFunc()

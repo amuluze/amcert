@@ -15,26 +15,26 @@ func Init(path string) error {
 	return nil
 }
 
-func SaveKey(k, v string) error {
-	return Default.Put(k, []byte(v))
-}
-
-func GetValue(key string) (string, error) {
-	return Default.GetString(key)
+func DeleteKey(key string) error {
+	return Default.Delete(key)
 }
 
 func GetPrefixKeys(key string) ([]string, error) {
 	return Default.Keys(key, false)
 }
 
-func DeleteKey(key string) error {
-	return Default.Delete(key)
+func PutString(k, v string) error {
+	return Default.Put(k, []byte(v))
+}
+
+func GetString(key string) (string, error) {
+	return Default.GetString(key)
 }
 
 func PutJson(key string, value interface{}) error {
 	return Default.PutJson(key, value)
 }
 
-func GetJson(key string) (interface{}, error) {
+func GetJson(key string) (string, error) {
 	return Default.GetString(key)
 }

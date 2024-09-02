@@ -3,3 +3,8 @@
 // Author: Amu
 // Description:
 package cert
+
+const (
+	RenewBefore   = 30 * 24
+	CheckInterval = 24
+)

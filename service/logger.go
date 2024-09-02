@@ -6,9 +6,12 @@ package service
 
 import "github.com/amuluze/amutool/logger"
 
-func NewLogger() *logger.Logger {
-	return logger.NewJsonFileLogger(
-		logger.SetLogFile("/etc/amcert/cert.log"),
-		logger.SetLogLevel("info"),
+func NewLogger(config *Config) *logger.Logger {
+	logx := logger.NewJsonFileLogger(
+		logger.SetLogFile(config.Log.Output),
+		logger.SetLogLevel(config.Log.Level),
+		logger.SetLogFileRotationTime(config.Log.Rotation),
+		logger.SetLogFileMaxAge(config.Log.MaxAge),
 	)
+	return logx
 }

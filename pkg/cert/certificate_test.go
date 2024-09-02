@@ -11,8 +11,8 @@ import (
 
 func TestGenerate(t *testing.T) {
 	config := &Config{
-		RenewBefore:   30 * 24,
-		CheckInterval: 24 * time.Hour,
+		RenewBefore:   RenewBefore,
+		CheckInterval: CheckInterval * time.Hour,
 		ContactEmail:  "amuluze@163.com",
 		CacheDir:      "/Users/amu/Desktop/github/cert/certs",
 		Domains:       []string{"amprobe.amuluze.com"},

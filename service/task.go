@@ -5,48 +5,74 @@
 package service
 
 import (
+	"encoding/json"
 	"fmt"
 	"github.com/amuluze/amcert/pkg/cert"
-	"github.com/amuluze/amcert/service/task"
+	"github.com/amuluze/amcert/pkg/db"
 	"github.com/amuluze/amutool/timex"
+	"log/slog"
 	"time"
 )
 
-type RenewTask struct {
-	tasks  []*task.Task
+type CertConfig struct {
+	Email   string   `json:"email"`
+	Path    string   `json:"path"`
+	Domains []string `json:"domains"`
+}
+
+type TimedTask struct {
 	ticker timex.Ticker
 	stopCh chan struct{}
 }
 
-func NewRenewTask(conf *Config) *RenewTask {
-	tk := timex.NewTicker(time.Duration(conf.CertificateConfigs[0].CheckInterval) * time.Hour)
-	
-	var renewTasks []*task.Task
-	for _, cc := range conf.CertificateConfigs {
-		ce := cert.NewCertificate(&cert.Config{
-			RenewBefore:   cc.RenewBefore,
-			CheckInterval: time.Duration(cc.CheckInterval) * time.Hour,
-			ContactEmail:  cc.ContactEmail,
-			Domains:       cc.Domains,
-			CacheDir:      cc.Cert,
-		})
-		renewTasks = append(renewTasks, task.NewTask(ce))
-	}
-	return &RenewTask{
+func NewTimedTask() *TimedTask {
+	tk := timex.NewTicker(24 * time.Hour)
+	return &TimedTask{
 		ticker: tk,
-		tasks:  renewTasks,
 		stopCh: make(chan struct{}),
 	}
 }
 
-func (r *RenewTask) Execute() {
-	for _, rt := range r.tasks {
-		fmt.Printf("task: %#v\n", rt)
+func (r *TimedTask) Execute() {
+	keys, err := db.GetPrefixKeys("cert-")
+	if err != nil {
+		return
+	}
+	for _, key := range keys {
+		jsonString, err := db.GetJson(key)
+		if err != nil {
+			slog.Error("Get json error:", err)
+			continue
+		}
+		var certConfig CertConfig
+		err = json.Unmarshal([]byte(jsonString), &certConfig)
+		if err != nil {
+			slog.Error("Unmarshal json error:", err)
+			continue
+		}
+		conf := &cert.Config{
+			RenewBefore:   cert.RenewBefore,
+			CheckInterval: cert.CheckInterval,
+			CacheDir:      certConfig.Path,
+			ContactEmail:  certConfig.Email,
+			Domains:       certConfig.Domains,
+		}
+		certificate := cert.NewCertificate(conf)
+		err = certificate.Load()
+		if err != nil {
+			slog.Error("Load certificate error:", err)
+			continue
+		}
+		err = certificate.Renew()
+		if err != nil {
+			slog.Error("Renew certificate error:", err)
+			continue
+		}
 	}
 	return
 }
 
-func (r *RenewTask) Run() {
+func (r *TimedTask) Run() {
 	for {
 		select {
 		case <-r.ticker.Chan():
@@ -58,6 +84,6 @@ func (r *RenewTask) Run() {
 	}
 }
 
-func (r *RenewTask) Stop() {
+func (r *TimedTask) Stop() {
 	close(r.stopCh)
 }

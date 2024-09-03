@@ -9,6 +9,7 @@ import (
 	"encoding/json"
 	"encoding/pem"
 	"fmt"
+	"log/slog"
 	"os"
 	"path/filepath"
 	"strings"
@@ -122,7 +123,7 @@ func (c *Certificate) Generate() error {
 	}
 	certificates, err := client.Certificate.Obtain(request)
 	if err != nil {
-		return fmt.Errorf("Obtain error: %v\n", err)
+		return fmt.Errorf("obtain error: %v", err)
 	}
 	c.Domain = certificates.Domain
 	c.Certificate = certificates.Certificate
@@ -142,6 +143,8 @@ func (c *Certificate) Renew() error {
 	if err != nil {
 		return err
 	}
+
+	slog.Info("certificate expire", "expire", expire)
 	if c.RenewBefore >= expire {
 		u, err := c.getUser()
 		if err != nil {
@@ -202,7 +205,7 @@ func (c *Certificate) createClient(u *User) (lego.Client, error) {
 
 	reg, err := client.Registration.Register(registration.RegisterOptions{TermsOfServiceAgreed: true})
 	if err != nil {
-		return lego.Client{}, fmt.Errorf("registration error: %v\n", err)
+		return lego.Client{}, fmt.Errorf("registration error: %v", err)
 	}
 
 	u.Registration = reg
@@ -212,7 +215,7 @@ func (c *Certificate) createClient(u *User) (lego.Client, error) {
 
 func (c *Certificate) save() error {
 	if err := os.WriteFile(c.DomainPath, []byte(c.Domain), 0600); err != nil {
-		return fmt.Errorf("error writing domain file: %v\n", err)
+		return fmt.Errorf("error writing domain file: %v", err)
 	}
 	if err := os.WriteFile(c.PrivateKeyPath, c.PrivateKey, os.ModePerm); err != nil {
 		return fmt.Errorf("error creating private key: %s", err)
@@ -237,7 +240,7 @@ func (c *Certificate) expires() (int, error) {
 		if err != nil {
 			return -1, err
 		}
-		timeLeft := cert.NotAfter.Sub(time.Now())
+		timeLeft := time.Until(cert.NotAfter)
 		return int(timeLeft.Hours()), nil
 	}
 	return -1, fmt.Errorf("invalid certificate")

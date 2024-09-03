@@ -6,11 +6,12 @@ package main
 
 import (
 	"fmt"
-	"github.com/amuluze/amcert/service"
-	"github.com/takama/daemon"
 	"os"
 	"os/signal"
 	"syscall"
+
+	"github.com/amuluze/amcert/service"
+	"github.com/takama/daemon"
 )
 
 type Service struct {
@@ -20,7 +21,7 @@ type Service struct {
 
 // Start amvector bootstrap service non-blocking
 func (s *Service) Start() {
-	fmt.Printf("Starting amvector bootstrap service...\n")
+	fmt.Printf("Starting amcert bootstrap service...\n")
 }
 
 // Run start amvector bootstrap service blocking and wait for exit signal

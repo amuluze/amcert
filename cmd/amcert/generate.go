@@ -17,6 +17,7 @@ import (
 )
 
 func runGenerate() error {
+	db.Init("/etc/amcert/storage.db")
 	reader := bufio.NewReader(os.Stdin)
 
 	fmt.Print("Please enter contact email: ")

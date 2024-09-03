@@ -7,12 +7,13 @@ package main
 import (
 	"bufio"
 	"fmt"
-	"github.com/amuluze/amcert/pkg/cert"
-	"github.com/amuluze/amcert/pkg/db"
 	"log/slog"
 	"os"
 	"strings"
 	"time"
+
+	"github.com/amuluze/amcert/pkg/cert"
+	"github.com/amuluze/amcert/pkg/db"
 )
 
 func runGenerate() error {
@@ -20,16 +21,21 @@ func runGenerate() error {
 
 	fmt.Print("Please enter contact email: ")
 	Email, _ := reader.ReadString('\n')
+	Email = strings.TrimSpace(Email)
 
 	fmt.Print("Please enter contact certificate path: ")
 	Path, _ := reader.ReadString('\n')
+	Path = strings.TrimSpace(Path)
 
 	fmt.Print("Please enter contact domains(split by comma): ")
 	Domains, _ := reader.ReadString('\n')
-	fmt.Printf("Email：%s, Path: %s, Domains: %s", Email, Path, Domains)
+	Domains = strings.TrimSpace(Domains)
+
+	fmt.Printf("Email: %s, Path: %s, Domains: %s\n", Email, Path, Domains)
 
 	// generate certificate
 	domains := strings.Split(Domains, ",")
+	fmt.Printf("domains: %#v\n", domains)
 	certificate := cert.NewCertificate(&cert.Config{
 		RenewBefore:   cert.RenewBefore,
 		CheckInterval: cert.CheckInterval,
@@ -37,9 +43,11 @@ func runGenerate() error {
 		CacheDir:      Path,
 		Domains:       domains,
 	})
+
+	fmt.Printf("certificate: %#v\n", certificate)
 	err := certificate.Generate()
 	if err != nil {
-		slog.Error("Error generating certificate", "error", err)
+		slog.Error("generate certificate", "error", err)
 		return err
 	}
 

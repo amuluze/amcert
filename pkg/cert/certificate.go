@@ -9,15 +9,16 @@ import (
 	"encoding/json"
 	"encoding/pem"
 	"fmt"
+	"os"
+	"path/filepath"
+	"strings"
+	"time"
+
 	"github.com/go-acme/lego/v4/certcrypto"
 	"github.com/go-acme/lego/v4/certificate"
 	"github.com/go-acme/lego/v4/lego"
 	"github.com/go-acme/lego/v4/providers/dns/tencentcloud"
 	"github.com/go-acme/lego/v4/registration"
-	"os"
-	"path/filepath"
-	"strings"
-	"time"
 )
 
 var _ ICertificate = (*Certificate)(nil)
@@ -110,6 +111,7 @@ func (c *Certificate) Generate() error {
 	if err != nil {
 		return err
 	}
+	fmt.Printf("user: %#v\n", u)
 	client, err := c.createClient(u)
 	if err != nil {
 		return err
@@ -122,7 +124,6 @@ func (c *Certificate) Generate() error {
 	if err != nil {
 		return fmt.Errorf("Obtain error: %v\n", err)
 	}
-
 	c.Domain = certificates.Domain
 	c.Certificate = certificates.Certificate
 	c.PrivateKey = certificates.PrivateKey
@@ -245,7 +246,7 @@ func (c *Certificate) expires() (int, error) {
 func (c *Certificate) getUser() (*User, error) {
 	var user User
 	b, err := os.ReadFile(c.UserPath)
-	if err == nil {
+	if b != nil && err != nil {
 		err = json.Unmarshal(b, &user)
 		if err != nil {
 			return nil, err

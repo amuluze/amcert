@@ -23,7 +23,7 @@ type Tx struct {
 }
 
 func (t *Tx) Keys(prefix string, recursive bool) ([]string, error) {
-	bk := t.tx.Bucket([]byte(prefix))
+	bk := t.tx.Bucket(defaultBucket)
 	if bk == nil {
 		return nil, ErrKeyNotFound
 	}

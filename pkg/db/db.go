@@ -4,10 +4,7 @@
 // Description:
 package db
 
-import "path/filepath"
-
-func Init(path string) error {
-	storagePath := filepath.Join(path, "storage.db")
+func Init(storagePath string) error {
 	err := Default.SetPath(storagePath)
 	if err != nil {
 		return err
@@ -35,6 +32,6 @@ func PutJson(key string, value interface{}) error {
 	return Default.PutJson(key, value)
 }
 
-func GetJson(key string) (string, error) {
-	return Default.GetString(key)
+func GetJson(key string, out interface{}) error {
+	return Default.GetJson(key, out)
 }

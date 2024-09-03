@@ -8,7 +8,7 @@ import (
 	"github.com/pkg/errors"
 	"sync"
 	"time"
-	
+
 	bolt "go.etcd.io/bbolt"
 )
 
@@ -18,7 +18,7 @@ var Default = &Proxy{Timeout: defaultTimeout}
 
 type Proxy struct {
 	Timeout time.Duration
-	
+
 	path string
 	db   *bolt.DB
 	ref  uint
@@ -28,7 +28,7 @@ type Proxy struct {
 func (p *Proxy) SetPath(path string) error {
 	p.mu.Lock()
 	defer p.mu.Unlock()
-	
+
 	if p.ref != 0 {
 		return errors.New("proxy already set")
 	}
@@ -39,7 +39,6 @@ func (p *Proxy) SetPath(path string) error {
 func (p *Proxy) Path() string {
 	p.mu.Lock()
 	defer p.mu.Unlock()
-	
 	return p.path
 }
 
@@ -70,22 +69,22 @@ func (p *Proxy) View(fn func(tx *Tx) error) error {
 func (p *Proxy) acquire() error {
 	p.mu.Lock()
 	defer p.mu.Unlock()
-	
+
 	timeout := p.Timeout
 	if timeout == 0 {
 		timeout = defaultTimeout
 	}
-	
+
 	if p.ref == 0 {
 		path := p.path
 		if path == "" {
-			return errors.New("proxy not set")
+			return errors.New("proxy unset")
 		}
 		newDB, err := bolt.Open(path, 0600, &bolt.Options{Timeout: timeout})
 		if err != nil {
 			return err
 		}
-		
+
 		err = newDB.Update(func(tx *bolt.Tx) error {
 			_, err := tx.CreateBucketIfNotExists(defaultBucket)
 			return err
@@ -106,7 +105,7 @@ func (p *Proxy) release() {
 	}
 	for i := 0; i < 3; i++ {
 		err := p.doRelease()
-		if err != nil {
+		if err == nil {
 			return
 		}
 		time.Sleep(timeout)
@@ -116,7 +115,7 @@ func (p *Proxy) release() {
 func (p *Proxy) doRelease() error {
 	p.mu.Lock()
 	defer p.mu.Unlock()
-	
+
 	if p.ref == 0 {
 		return nil
 	}
@@ -165,19 +164,19 @@ func (p *Proxy) GetJson(key string, out interface{}) error {
 }
 
 func (p *Proxy) Put(key string, value []byte) error {
-	return p.View(func(tx *Tx) (rerr error) {
+	return p.Update(func(tx *Tx) (rerr error) {
 		return tx.Put(key, value)
 	})
 }
 
 func (p *Proxy) PutString(key string, value string) error {
-	return p.View(func(tx *Tx) (rerr error) {
+	return p.Update(func(tx *Tx) (rerr error) {
 		return tx.PutString(key, value)
 	})
 }
 
 func (p *Proxy) PutJson(key string, value interface{}) error {
-	return p.View(func(tx *Tx) (rerr error) {
+	return p.Update(func(tx *Tx) (rerr error) {
 		return tx.PutJson(key, value)
 	})
 }

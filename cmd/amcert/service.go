@@ -66,6 +66,14 @@ func (s *Service) manager(args []string) (string, error) {
 			} else {
 				os.Exit(0)
 			}
+		case "generate":
+			fmt.Printf("generating ssl certificate...\n")
+			if err := runGenerate(); err != nil {
+				fmt.Printf("error generating ssl certificate: %v\n", err)
+				os.Exit(-1)
+			} else {
+				os.Exit(0)
+			}
 		default:
 			usage()
 			return "", nil

@@ -6,28 +6,28 @@ package main
 
 import (
 	"bufio"
-	"encoding/json"
 	"fmt"
 	"github.com/amuluze/amcert/pkg/cert"
 	"github.com/amuluze/amcert/pkg/db"
 	"log/slog"
 	"os"
 	"strings"
+	"time"
 )
 
 func runGenerate() error {
 	reader := bufio.NewReader(os.Stdin)
-	
+
 	fmt.Print("Please enter contact email: ")
 	Email, _ := reader.ReadString('\n')
-	
+
 	fmt.Print("Please enter contact certificate path: ")
 	Path, _ := reader.ReadString('\n')
-	
+
 	fmt.Print("Please enter contact domains(split by comma): ")
 	Domains, _ := reader.ReadString('\n')
 	fmt.Printf("Email：%s, Path: %s, Domains: %s", Email, Path, Domains)
-	
+
 	// generate certificate
 	domains := strings.Split(Domains, ",")
 	certificate := cert.NewCertificate(&cert.Config{
@@ -42,15 +42,15 @@ func runGenerate() error {
 		slog.Error("Error generating certificate", "error", err)
 		return err
 	}
-	
+
 	// save certificate info
 	certConfig := cert.Config{
 		ContactEmail: Email,
 		CacheDir:     Path,
 		Domains:      domains,
 	}
-	certString, _ := json.Marshal(certConfig)
-	err = db.PutString("", string(certString))
+	key := fmt.Sprintf("cert-%s", time.Now().Format("20060102150405"))
+	err = db.PutJson(key, certConfig)
 	if err != nil {
 		slog.Error("Failed to put certificate into database", "error", err)
 		return err

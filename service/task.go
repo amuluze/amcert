@@ -5,7 +5,6 @@
 package service
 
 import (
-	"encoding/json"
 	"fmt"
 	"github.com/amuluze/amcert/pkg/cert"
 	"github.com/amuluze/amcert/pkg/db"
@@ -39,25 +38,15 @@ func (r *TimedTask) Execute() {
 		return
 	}
 	for _, key := range keys {
-		jsonString, err := db.GetJson(key)
+		var conf cert.Config
+		err := db.GetJson(key, conf)
 		if err != nil {
 			slog.Error("Get json error:", err)
 			continue
 		}
-		var certConfig CertConfig
-		err = json.Unmarshal([]byte(jsonString), &certConfig)
-		if err != nil {
-			slog.Error("Unmarshal json error:", err)
-			continue
-		}
-		conf := &cert.Config{
-			RenewBefore:   cert.RenewBefore,
-			CheckInterval: cert.CheckInterval,
-			CacheDir:      certConfig.Path,
-			ContactEmail:  certConfig.Email,
-			Domains:       certConfig.Domains,
-		}
-		certificate := cert.NewCertificate(conf)
+		conf.RenewBefore = cert.RenewBefore
+		conf.CheckInterval = cert.CheckInterval
+		certificate := cert.NewCertificate(&conf)
 		err = certificate.Load()
 		if err != nil {
 			slog.Error("Load certificate error:", err)

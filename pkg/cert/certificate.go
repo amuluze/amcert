@@ -5,8 +5,6 @@
 package cert
 
 import (
-	"crypto/rand"
-	"crypto/rsa"
 	"crypto/x509"
 	"encoding/json"
 	"encoding/pem"
@@ -185,8 +183,8 @@ func (c *Certificate) Renew() error {
 
 func (c *Certificate) createClient(u *User) (lego.Client, error) {
 	config := lego.NewConfig(u)
-	config.CADirURL = lego.LEDirectoryStaging
-	config.Certificate.KeyType = certcrypto.RSA2048
+	config.CADirURL = lego.LEDirectoryProduction
+	config.Certificate.KeyType = certcrypto.EC256
 
 	client, err := lego.NewClient(config)
 	if err != nil {
@@ -258,7 +256,7 @@ func (c *Certificate) getUser() (*User, error) {
 			return nil, err
 		}
 	} else {
-		privateKey, err := rsa.GenerateKey(rand.Reader, 4096)
+		privateKey, err := certcrypto.GeneratePrivateKey(certcrypto.EC256)
 		if err != nil {
 			return &user, fmt.Errorf("simplecert: failed to generate private key: %s", err)
 		}

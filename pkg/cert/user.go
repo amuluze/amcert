@@ -6,15 +6,14 @@ package cert
 
 import (
 	"crypto"
-	"crypto/rsa"
 
 	"github.com/go-acme/lego/v4/registration"
 )
 
 type User struct {
-	Email        string
-	PrivateKey   *rsa.PrivateKey
-	Registration *registration.Resource
+	Email        string                 `json:"email"`
+	Registration *registration.Resource `json:"registration"`
+	PrivateKey   crypto.PrivateKey
 }
 
 func (c *User) GetEmail() string {

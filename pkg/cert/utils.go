@@ -5,18 +5,9 @@
 package cert
 
 import (
-	"crypto"
-	"crypto/ecdsa"
-	"crypto/elliptic"
-	"crypto/rand"
 	"fmt"
 	"os"
 )
-
-func GetPrivateKey() crypto.PrivateKey {
-	privateKey, _ := ecdsa.GenerateKey(elliptic.P256(), rand.Reader)
-	return privateKey
-}
 
 func GetSecretID() string {
 	return os.Getenv(SecretID)

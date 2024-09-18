@@ -6,12 +6,14 @@ package cert
 
 import (
 	"crypto"
+	"crypto/rsa"
+
 	"github.com/go-acme/lego/v4/registration"
 )
 
 type User struct {
 	Email        string
-	PrivateKey   crypto.PrivateKey
+	PrivateKey   *rsa.PrivateKey
 	Registration *registration.Resource
 }
 

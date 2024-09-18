@@ -5,6 +5,8 @@
 package cert
 
 import (
+	"crypto/rand"
+	"crypto/rsa"
 	"crypto/x509"
 	"encoding/json"
 	"encoding/pem"
@@ -125,6 +127,7 @@ func (c *Certificate) Generate() error {
 	if err != nil {
 		return fmt.Errorf("obtain error: %v", err)
 	}
+	fmt.Printf("certificates: %#v\n", certificates.Domain)
 	c.Domain = certificates.Domain
 	c.Certificate = certificates.Certificate
 	c.PrivateKey = certificates.PrivateKey
@@ -255,7 +258,10 @@ func (c *Certificate) getUser() (*User, error) {
 			return nil, err
 		}
 	} else {
-		privateKey := GetPrivateKey()
+		privateKey, err := rsa.GenerateKey(rand.Reader, 4096)
+		if err != nil {
+			return &user, fmt.Errorf("simplecert: failed to generate private key: %s", err)
+		}
 		user.PrivateKey = privateKey
 		user.Email = DefaultContactEmail
 	}

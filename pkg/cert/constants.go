@@ -5,7 +5,7 @@
 package cert
 
 const (
-	DefaultContactEmail       = "amuluze@163.com"
+	DefaultContactEmail       = "wangjialong89@yeah.net"
 	UserFileName              = "user.json"
 	DomainFileName            = "domain"
 	CertificateFileName       = "fullchain.pem"

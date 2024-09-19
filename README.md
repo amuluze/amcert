@@ -1,7 +1,9 @@
 # amcert
+
 cert generate and renew
 
 ## usage
+
 ```bash
 # 常用命令
 $ amcert install  # 安装

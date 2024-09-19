@@ -10,7 +10,6 @@ import (
 	"log/slog"
 	"os"
 	"strings"
-	"time"
 
 	"github.com/amuluze/amcert/pkg/cert"
 	"github.com/amuluze/amcert/pkg/db"
@@ -32,34 +31,30 @@ func runGenerate() error {
 	Domains, _ := reader.ReadString('\n')
 	Domains = strings.TrimSpace(Domains)
 
+	fmt.Printf(" *************  certificate generate info  ************* ")
 	fmt.Printf("Email: %s, Path: %s, Domains: %s\n", Email, Path, Domains)
+	fmt.Printf(" ******************************************************* ")
 
 	// generate certificate
 	domains := strings.Split(Domains, ",")
-	fmt.Printf("domains: %#v\n", domains)
-	certificate := cert.NewCertificate(&cert.Config{
+	conf := cert.Config{
 		RenewBefore:   cert.RenewBefore,
 		CheckInterval: cert.CheckInterval,
 		ContactEmail:  Email,
 		CacheDir:      Path,
 		Domains:       domains,
-	})
+	}
+	certificate := cert.NewCertificate(&conf)
 
-	fmt.Printf("certificate: %#v\n", certificate)
 	err := certificate.Generate()
 	if err != nil {
 		slog.Error("generate certificate", "error", err)
 		return err
 	}
 
-	// save certificate info
-	certConfig := cert.Config{
-		ContactEmail: Email,
-		CacheDir:     Path,
-		Domains:      domains,
-	}
-	key := fmt.Sprintf("cert-%s", time.Now().Format("20060102150405"))
-	err = db.PutJson(key, certConfig)
+	// save certificate generate info
+	key := fmt.Sprintf("cert-%s", certificate.Domain)
+	err = db.PutJson(key, conf)
 	if err != nil {
 		slog.Error("Failed to put certificate into database", "error", err)
 		return err

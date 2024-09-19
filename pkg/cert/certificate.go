@@ -25,8 +25,10 @@ import (
 var _ ICertificate = (*Certificate)(nil)
 
 type ICertificate interface {
+	Load() error
 	Generate() error
 	Renew() error
+	Expire() (int, error)
 }
 
 type Certificate struct {
@@ -61,46 +63,56 @@ func NewCertificate(config *Config) *Certificate {
 
 func (c *Certificate) Load() error {
 	if _, err := FileExists(c.DomainPath); err != nil {
+		slog.Error("Domain path not found", "domain path", c.DomainPath, "error", err)
 		return err
 	}
 	domainData, err := os.ReadFile(c.DomainPath)
 	if err != nil {
+		slog.Error("Read domain file error", "domain path", c.DomainPath, "error", err)
 		return err
 	}
 	c.Domain = strings.TrimSpace(string(domainData))
 
 	if _, err := FileExists(c.PrivateKeyPath); err != nil {
+		slog.Error("Private key path not found", "private key path", c.PrivateKeyPath, "error", err)
 		return err
 	}
 	keyData, err := os.ReadFile(c.PrivateKeyPath)
 	if err != nil {
+		slog.Error("Read private key file error", "private key path", c.PrivateKeyPath, "error", err)
 		return err
 	}
 	c.PrivateKey = keyData
 
 	if _, err = FileExists(c.CertificatePath); err != nil {
+		slog.Error("Certificate path not found", "certificate path", c.CertificatePath, "error", err)
 		return err
 	}
 	certData, err := os.ReadFile(c.CertificatePath)
 	if err != nil {
+		slog.Error("Read certificate file error", "certificate path", c.CertificatePath, "error", err)
 		return err
 	}
 	c.Certificate = certData
 
 	if _, err := FileExists(c.IssuerCertificatePath); err != nil {
+		slog.Error("Issuer certificate path not found", "issuer certificate path", c.IssuerCertificatePath, "error", err)
 		return err
 	}
 	issuerData, err := os.ReadFile(c.IssuerCertificatePath)
 	if err != nil {
+		slog.Error("Read issuer certificate file error", "issuer certificate path", c.IssuerCertificatePath, "error", err)
 		return err
 	}
 	c.IssuerCertificate = issuerData
 
 	if _, err = FileExists(c.CSRPath); err != nil {
+		slog.Error("CSR path not found", "csr path", c.CSRPath, "error", err)
 		return err
 	}
 	csrData, err := os.ReadFile(c.CSRPath)
 	if err != nil {
+		slog.Error("Read csr file error", "csr path", c.CSRPath, "error", err)
 		return err
 	}
 	c.CSR = csrData
@@ -110,11 +122,13 @@ func (c *Certificate) Load() error {
 func (c *Certificate) Generate() error {
 	u, err := c.getUser()
 	if err != nil {
+		slog.Error("Get user error", "error", err)
 		return err
 	}
-	fmt.Printf("user: %#v\n", u)
+
 	client, err := c.createClient(u)
 	if err != nil {
+		slog.Error("Create client error", "error", err)
 		return err
 	}
 	request := certificate.ObtainRequest{
@@ -123,36 +137,40 @@ func (c *Certificate) Generate() error {
 	}
 	certificates, err := client.Certificate.Obtain(request)
 	if err != nil {
-		return fmt.Errorf("obtain error: %v", err)
+		slog.Error("Obtain certificate error", "error", err)
+		return err
 	}
-	fmt.Printf("certificates: %#v\n", certificates.Domain)
+
 	c.Domain = certificates.Domain
 	c.Certificate = certificates.Certificate
 	c.PrivateKey = certificates.PrivateKey
 	c.CSR = certificates.CSR
 	c.IssuerCertificate = certificates.IssuerCertificate
-
-	// save to file
+	// save certificate to file
 	if err := c.save(); err != nil {
+		slog.Error("Save certificate error", "error", err)
 		return err
 	}
 	return nil
 }
 
 func (c *Certificate) Renew() error {
-	expire, err := c.expires()
+	expire, err := c.Expire()
 	if err != nil {
+		slog.Error("Get certificate expire error", "error", err)
 		return err
 	}
 
-	slog.Info("certificate expire", "expire", expire)
+	slog.Info("certificate expire", "certificate domain", c.Domain, "expire", expire)
 	if c.RenewBefore >= expire {
 		u, err := c.getUser()
 		if err != nil {
+			slog.Error("Get user error", "error", err)
 			return err
 		}
 		client, err := c.createClient(u)
 		if err != nil {
+			slog.Error("Create client error", "error", err)
 			return err
 		}
 		resource, err := client.Certificate.RenewWithOptions(certificate.Resource{
@@ -165,6 +183,7 @@ func (c *Certificate) Renew() error {
 			CSR:               c.CSR,
 		}, &certificate.RenewOptions{})
 		if err != nil {
+			slog.Error("Renew certificate error", "error", err)
 			return err
 		}
 		c.CSR = resource.CSR
@@ -175,6 +194,7 @@ func (c *Certificate) Renew() error {
 
 		err = c.save()
 		if err != nil {
+			slog.Error("Save renew certificate error", "error", err)
 			return err
 		}
 	}
@@ -188,25 +208,25 @@ func (c *Certificate) createClient(u *User) (lego.Client, error) {
 
 	client, err := lego.NewClient(config)
 	if err != nil {
-		return lego.Client{}, fmt.Errorf("error creating new client: %s", err)
+		slog.Error("Create lego client error", "error", err)
+		return lego.Client{}, err
 	}
 
 	cfg := tencentcloud.NewDefaultConfig()
 	cfg.SecretID = GetSecretID()
 	cfg.SecretKey = GetSecretKey()
 	provider, err := tencentcloud.NewDNSProviderConfig(cfg)
-	fmt.Printf("config: %#v\n", cfg)
 	if err != nil {
-		return lego.Client{}, fmt.Errorf("error creating DNS provider: %s", err)
+		return lego.Client{}, fmt.Errorf("Create DNS provider error: %s", err)
 	}
 	err = client.Challenge.SetDNS01Provider(provider)
 	if err != nil {
-		return lego.Client{}, fmt.Errorf("error setting DNS provider: %s", err)
+		return lego.Client{}, fmt.Errorf("Setting DNS provider error: %s", err)
 	}
 
 	reg, err := client.Registration.Register(registration.RegisterOptions{TermsOfServiceAgreed: true})
 	if err != nil {
-		return lego.Client{}, fmt.Errorf("registration error: %v", err)
+		return lego.Client{}, fmt.Errorf("Registration error: %v", err)
 	}
 
 	u.Registration = reg
@@ -233,7 +253,7 @@ func (c *Certificate) save() error {
 	return nil
 }
 
-func (c *Certificate) expires() (int, error) {
+func (c *Certificate) Expire() (int, error) {
 	var certDERBlock *pem.Block
 	certDERBlock, _ = pem.Decode(c.Certificate)
 	if certDERBlock.Type == "CERTIFICATE" {
@@ -275,5 +295,6 @@ func (c *Certificate) saveUser(user *User) {
 	err = os.WriteFile(c.UserPath, b, os.ModePerm)
 	if err != nil {
 		fmt.Printf("error saving user: %v\n", err)
+		return
 	}
 }

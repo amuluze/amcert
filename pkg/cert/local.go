@@ -131,7 +131,7 @@ func (l *LocalCertificate) save() error {
 }
 
 func (l *LocalCertificate) Renew() error {
-	expire, err := l.expires()
+	expire, err := l.Expire()
 	if err != nil {
 		return err
 	}
@@ -145,7 +145,7 @@ type LocalCertificateStatus struct {
 	Expires int `json:"expires"`
 }
 
-func (l *LocalCertificate) expires() (int, error) {
+func (l *LocalCertificate) Expire() (int, error) {
 	var certDERBlock *pem.Block
 	certDERBlock, _ = pem.Decode(l.Certificate)
 	if certDERBlock.Type == "CERTIFICATE" {

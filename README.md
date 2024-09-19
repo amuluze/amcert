@@ -17,4 +17,9 @@ $ amcert setup
 
 # 生成 SSL 证书
 $ amcert generate
+
+# 查看 SSL 证书相关信息
+$ amcert db keys                     # 查看所有证书
+$ amcert db detail cert-amuluze.com  # 查看指定证书详情
+$ amcert db expire cert-amuluze.com  # 查看指定证书过期时间
 ```

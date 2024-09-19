@@ -33,7 +33,7 @@ func TestLoad(t *testing.T) {
 		Domains:       []string{"amvector.amuluze.com"},
 	}
 	c := NewCertificate(config)
-	expire, err := c.expires()
+	expire, err := c.Expire()
 	if err != nil {
 		t.Errorf("Error loading certificate: %s", err)
 	}

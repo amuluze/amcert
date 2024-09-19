@@ -37,8 +37,10 @@ func (r *TimedTask) Execute() {
 	slog.Info("timed task execute")
 	keys, err := db.GetPrefixKeys("cert-")
 	if err != nil {
+		slog.Error("Get prefix keys error", "error", err)
 		return
 	}
+	slog.Info("cert keys", "keys", keys)
 	for _, key := range keys {
 		var conf cert.Config
 		err := db.GetJson(key, &conf)

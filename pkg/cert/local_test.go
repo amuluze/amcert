@@ -37,7 +37,7 @@ func TestLocalLoad(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	expire, err := c.expires()
+	expire, err := c.Expire()
 	if err != nil {
 		t.Errorf("error getting expired certificate: %v", err)
 	}

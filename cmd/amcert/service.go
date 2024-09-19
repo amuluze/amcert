@@ -75,6 +75,14 @@ func (s *Service) manager(args []string) (string, error) {
 			} else {
 				os.Exit(0)
 			}
+		case "db":
+			fmt.Printf("run db command...\n")
+			if err := runDB(args[1:]); err != nil {
+				fmt.Printf("error running db command: %v\n", err)
+				os.Exit(-1)
+			} else {
+				os.Exit(0)
+			}
 		default:
 			usage()
 			return "", nil

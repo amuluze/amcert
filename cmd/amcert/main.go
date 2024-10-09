@@ -41,6 +41,8 @@ func parseConfig() []string {
 	return flag.Args()
 }
 
+// TODO: need to opt output and log
+
 func main() {
 	flag.Usage = usage
 	args := parseConfig()

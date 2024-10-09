@@ -201,6 +201,9 @@ func (c *Certificate) Renew() error {
 	return nil
 }
 
+/**
+ * TODO： 需要完善和补充 DNSProviderConfig
+ */
 func (c *Certificate) createClient(u *User) (lego.Client, error) {
 	config := lego.NewConfig(u)
 	config.CADirURL = lego.LEDirectoryProduction

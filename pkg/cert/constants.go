@@ -14,8 +14,6 @@ const (
 	PrivateKeyFileName        = "privkey.pem"
 	IssuerCertificateFileName = "issuer.cert.pem"
 	CSRFileName               = "csr.pem"
-	LocalCertificateFileName  = "localcert.pem"
-	LocalPrivateKeyFileName   = "localkey.pem"
 	SecretID                  = "TENCENTCLOUD_SECRET_ID"
 	SecretKey                 = "TENCENTCLOUD_SECRET_KEY"
 )

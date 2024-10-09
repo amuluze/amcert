@@ -19,12 +19,12 @@ type Service struct {
 	daemon     daemon.Daemon
 }
 
-// Start amvector bootstrap service non-blocking
+// Start amcert bootstrap service non-blocking
 func (s *Service) Start() {
 	fmt.Printf("Starting amcert bootstrap service...\n")
 }
 
-// Run start amvector bootstrap service blocking and wait for exit signal
+// Run start amcert bootstrap service blocking and wait for exit signal
 func (s *Service) Run() {
 	interrupt := make(chan os.Signal, 1)
 	signal.Notify(interrupt, os.Interrupt, syscall.SIGTERM)
@@ -39,9 +39,9 @@ func (s *Service) Run() {
 	}
 }
 
-// Stop amvector bootstrap service
+// Stop amcert bootstrap service
 func (s *Service) Stop() {
-	fmt.Println("Stopping amvector bootstrap service...")
+	fmt.Println("Stopping amcert bootstrap service...")
 }
 
 func (s *Service) manager(args []string) (string, error) {
@@ -69,7 +69,7 @@ func (s *Service) manager(args []string) (string, error) {
 			}
 		case "generate":
 			fmt.Printf("generating ssl certificate...\n")
-			if err := runGenerate(); err != nil {
+			if err := runGenerate(args[1:]); err != nil {
 				fmt.Printf("error generating ssl certificate: %v\n", err)
 				os.Exit(-1)
 			} else {

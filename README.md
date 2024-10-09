@@ -16,10 +16,13 @@ $ amcert remove   # 移除
 $ amcert setup
 
 # 生成 SSL 证书
-$ amcert generate
+$ amcert ssl
 
 # 查看 SSL 证书相关信息
 $ amcert db keys                     # 查看所有证书
 $ amcert db detail cert-amuluze.com  # 查看指定证书详情
 $ amcert db expire cert-amuluze.com  # 查看指定证书过期时间
+
+# 生成 TLS 证书
+$ amcert tls
 ```

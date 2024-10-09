@@ -14,7 +14,7 @@ type User struct {
 }
 
 func TestDB(t *testing.T) {
-	err := Init("./storage.db")
+	err := Initialize("./storage.db")
 	if err != nil {
 		t.Fatalf("init error: %s", err)
 	}

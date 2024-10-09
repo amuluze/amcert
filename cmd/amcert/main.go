@@ -26,9 +26,13 @@ var (
 
 func usage() {
 	fmt.Println("Description: \n\t", description)
-	fmt.Println("Usage: \n\t", os.Args[0], " [--flag arguments] install | remove | start | stop | status")
+	fmt.Println("Usage: \n\t", os.Args[0], " install | remove | start | stop | status | setup")
+	fmt.Println("       \t", os.Args[0], " generate ssl")
+	fmt.Println("       \t", os.Args[0], " generate tls")
+	fmt.Println("       \t", os.Args[0], " ssl keys")
+	fmt.Println("       \t", os.Args[0], " ssl detail key")
+	fmt.Println("       \t", os.Args[0], " ssl expire key")
 	fmt.Println("Flags: ")
-	flag.PrintDefaults()
 }
 
 func parseConfig() []string {

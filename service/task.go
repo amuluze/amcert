@@ -21,20 +21,27 @@ type CertConfig struct {
 }
 
 type TimedTask struct {
-	ticker timex.Ticker
-	stopCh chan struct{}
+	ticker      timex.Ticker
+	stopCh      chan struct{}
+	storagePath string
 }
 
-func NewTimedTask() *TimedTask {
+func NewTimedTask(config *Config) *TimedTask {
 	tk := timex.NewTicker(24 * time.Hour)
 	return &TimedTask{
-		ticker: tk,
-		stopCh: make(chan struct{}),
+		ticker:      tk,
+		stopCh:      make(chan struct{}),
+		storagePath: config.StoragePath,
 	}
 }
 
 func (r *TimedTask) Execute() {
 	slog.Info("timed task execute")
+	err := db.Initialize(r.storagePath)
+	if err != nil {
+		slog.Error("db initialize failed", "error", err)
+		return
+	}
 	keys, err := db.GetPrefixKeys("cert-")
 	if err != nil {
 		slog.Error("Get prefix keys error", "error", err)

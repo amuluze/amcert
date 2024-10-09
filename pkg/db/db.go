@@ -4,7 +4,7 @@
 // Description:
 package db
 
-func Init(storagePath string) error {
+func Initialize(storagePath string) error {
 	err := Default.SetPath(storagePath)
 	if err != nil {
 		return err

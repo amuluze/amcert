@@ -13,7 +13,12 @@ import (
 )
 
 func runDB(args []string) error {
-	db.Init("/etc/amcert/storage.db")
+	err := db.Initialize("/etc/amcert/storage.db")
+	if err != nil {
+		slog.Error("db initialize failed", "error", err)
+		return err
+	}
+
 	subCommand := args[0]
 	switch subCommand {
 	case "keys":

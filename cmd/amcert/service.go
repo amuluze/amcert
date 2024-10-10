@@ -75,7 +75,7 @@ func (s *Service) manager(args []string) (string, error) {
 			} else {
 				os.Exit(0)
 			}
-		case "db":
+		case "ssl":
 			fmt.Printf("run db command...\n")
 			if err := runDB(args[1:]); err != nil {
 				fmt.Printf("error running db command: %v\n", err)

@@ -1,18 +1,16 @@
 module github.com/amuluze/amcert
 
-go 1.22
-
-toolchain go1.22.6
+go 1.21.10
 
 require (
 	github.com/amuluze/amutool/logger v0.0.0-20240821104128-caed9cc0d402
 	github.com/amuluze/amutool/timex v0.0.0-20240821104128-caed9cc0d402
 	github.com/go-acme/lego/v4 v4.16.1
 	github.com/google/wire v0.6.0
-	github.com/patrickmn/go-cache v2.1.0+incompatible
+	github.com/pkg/errors v0.9.1
 	github.com/spf13/viper v1.19.0
 	github.com/takama/daemon v1.0.0
-	go.etcd.io/bbolt v1.3.11
+	go.etcd.io/bbolt v1.3.10
 	gopkg.in/yaml.v2 v2.4.0
 )
 
@@ -27,7 +25,6 @@ require (
 	github.com/miekg/dns v1.1.59 // indirect
 	github.com/mitchellh/mapstructure v1.5.0 // indirect
 	github.com/pelletier/go-toml/v2 v2.2.2 // indirect
-	github.com/pkg/errors v0.9.1 // indirect
 	github.com/sagikazarmark/locafero v0.4.0 // indirect
 	github.com/sagikazarmark/slog-shim v0.1.0 // indirect
 	github.com/sourcegraph/conc v0.3.0 // indirect

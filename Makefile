@@ -12,10 +12,9 @@ amd64:
 .PHONY: arm64
 # build arm64
 arm64:
-	@CGO_ENABLED=0 GOOS=linux GOARCH=arm64 $(GOBUILD) -ldflags "-s -w" am -o $(TARGET) $(SERVER)
+	@CGO_ENABLED=0 GOOS=linux GOARCH=arm64 $(GOBUILD) -ldflags "-s -w" -o $(TARGET) $(SERVER)
 
 .PHONY: wire
 # generate wire
 wire:
 	wire ./service/
-

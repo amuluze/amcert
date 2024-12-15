@@ -19,7 +19,7 @@ $ amcert setup
 $ amcert generate ssl/tls
 
 # 查看 SSL 证书相关信息
-$ amcert db keys                     # 查看所有证书
-$ amcert db detail cert-amuluze.com  # 查看指定证书详情
-$ amcert db expire cert-amuluze.com  # 查看指定证书过期时间
+$ amcert ssl keys                     # 查看所有证书
+$ amcert ssl detail cert-amuluze.com  # 查看指定证书详情
+$ amcert ssl expire cert-amuluze.com  # 查看指定证书过期时间
 ```

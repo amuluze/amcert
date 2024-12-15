@@ -6,7 +6,7 @@ package cert
 
 const (
 	RenewBefore               = 30 * 24
-	CheckInterval             = 24
+	CheckInterval             = 1
 	DefaultContactEmail       = "wangjialong89@yeah.net"
 	UserFileName              = "user.json"
 	DomainFileName            = "domain"

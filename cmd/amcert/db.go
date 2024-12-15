@@ -7,6 +7,7 @@ package main
 import (
 	"fmt"
 	"log/slog"
+	"time"
 
 	"github.com/amuluze/amcert/pkg/cert"
 	"github.com/amuluze/amcert/pkg/db"
@@ -36,6 +37,8 @@ func runDB(args []string) error {
 			slog.Error("get certificate config failed", "error", err)
 			return err
 		}
+		conf.RenewBefore = cert.RenewBefore
+		conf.CheckInterval = time.Duration(cert.CheckInterval) * time.Hour
 		fmt.Printf("Certificate config: %#v\n", conf)
 		return nil
 	case "expire":
@@ -45,6 +48,8 @@ func runDB(args []string) error {
 			slog.Error("get certificate config failed", "error", err)
 			return err
 		}
+		conf.RenewBefore = cert.RenewBefore
+		conf.CheckInterval = time.Duration(cert.CheckInterval) * time.Hour
 		certificate := cert.NewCertificate(&conf)
 		if err := certificate.Load(); err != nil {
 			slog.Error("load certificate failed", "error", err)

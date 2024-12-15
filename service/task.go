@@ -27,7 +27,8 @@ type TimedTask struct {
 }
 
 func NewTimedTask(config *Config) *TimedTask {
-	tk := timex.NewTicker(24 * time.Hour)
+	tk := timex.NewTicker(cert.CheckInterval * time.Hour)
+	slog.Info("new timed task", "conf", config.StoragePath)
 	return &TimedTask{
 		ticker:      tk,
 		stopCh:      make(chan struct{}),
@@ -36,7 +37,7 @@ func NewTimedTask(config *Config) *TimedTask {
 }
 
 func (r *TimedTask) Execute() {
-	slog.Info("timed task execute")
+	slog.Info("timed task execute", "storage path", r.storagePath)
 	err := db.Initialize(r.storagePath)
 	if err != nil {
 		slog.Error("db initialize failed", "error", err)
@@ -55,12 +56,10 @@ func (r *TimedTask) Execute() {
 			slog.Error("Get json error", "err", err)
 			continue
 		}
-
-		slog.Info("cert config", "config", conf)
 		conf.RenewBefore = cert.RenewBefore
-		conf.CheckInterval = cert.CheckInterval
+		conf.CheckInterval = time.Duration(cert.CheckInterval) * time.Hour
 		certificate := cert.NewCertificate(&conf)
-
+		slog.Info("cert config", "config", conf)
 		err = certificate.Load()
 		if err != nil {
 			slog.Error("Load certificate error", "err", err)

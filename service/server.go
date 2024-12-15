@@ -5,8 +5,9 @@
 package service
 
 import (
-	"github.com/amuluze/amcert/pkg/db"
 	"log/slog"
+
+	"github.com/amuluze/amcert/pkg/db"
 )
 
 func Run(configFile string) (func(), error) {
@@ -25,7 +26,6 @@ func Run(configFile string) (func(), error) {
 
 	// 初始化日志
 	slog.SetDefault(injector.Logger.Logger)
-
 	// 定时任务
 	timedTask := injector.Task
 	go timedTask.Run()

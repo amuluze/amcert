@@ -30,6 +30,7 @@ func usage() {
 	fmt.Println("       \t", os.Args[0], " generate ssl")
 	fmt.Println("       \t", os.Args[0], " generate tls")
 	fmt.Println("       \t", os.Args[0], " ssl keys")
+	fmt.Println("       \t", os.Args[0], " ssl delete key")
 	fmt.Println("       \t", os.Args[0], " ssl detail key")
 	fmt.Println("       \t", os.Args[0], " ssl expire key")
 	fmt.Println("Flags: ")

@@ -53,10 +53,14 @@ func runDB(args []string) error {
 			fmt.Printf("delete key failed: %v", err)
 			return err
 		}
-		err := os.Remove(conf.CacheDir)
-		if err != nil {
-			fmt.Printf("delete cache dir failed: %v", err)
-			return err
+		if _, err := os.Stat(conf.CacheDir); os.IsNotExist(err) {
+			fmt.Printf("%s does not exist", conf.CacheDir)
+		} else {
+			err := os.RemoveAll(conf.CacheDir)
+			if err != nil {
+				fmt.Printf("delete cache dir failed: %v", err)
+				return err
+			}
 		}
 	case "expire":
 		key := args[1]

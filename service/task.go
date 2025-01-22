@@ -10,6 +10,7 @@ import (
 	"time"
 
 	"github.com/amuluze/amcert/pkg/cert"
+	"github.com/amuluze/amcert/pkg/config"
 	"github.com/amuluze/amcert/pkg/db"
 	"github.com/amuluze/amutool/timex"
 )
@@ -26,7 +27,7 @@ type TimedTask struct {
 	storagePath string
 }
 
-func NewTimedTask(config *Config) *TimedTask {
+func NewTimedTask(config *config.Config) *TimedTask {
 	tk := timex.NewTicker(cert.CheckInterval * time.Hour)
 	slog.Info("new timed task", "conf", config.StoragePath)
 	return &TimedTask{

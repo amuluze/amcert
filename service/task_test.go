@@ -4,10 +4,14 @@
 // Description:
 package service
 
-import "testing"
+import (
+	"testing"
+
+	"github.com/amuluze/amcert/pkg/config"
+)
 
 func TestExecute(t *testing.T) {
-	conf := Config{
+	conf := config.Config{
 		StoragePath: "/etc/amcert/storage.db",
 	}
 	t.Logf("conf: %#v", conf)

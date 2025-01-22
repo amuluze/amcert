@@ -4,9 +4,12 @@
 // Description:
 package service
 
-import "github.com/amuluze/amutool/logger"
+import (
+	"github.com/amuluze/amcert/pkg/config"
+	"github.com/amuluze/amutool/logger"
+)
 
-func NewLogger(config *Config) *logger.Logger {
+func NewLogger(config *config.Config) *logger.Logger {
 	logx := logger.NewJsonFileLogger(
 		logger.SetLogFile(config.Log.Output),
 		logger.SetLogLevel(config.Log.Level),

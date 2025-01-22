@@ -5,6 +5,7 @@
 package db
 
 func Initialize(storagePath string) error {
+	// TODO: 初始化数据库, 如果 storagePath 不存在则创建
 	err := Default.SetPath(storagePath)
 	if err != nil {
 		return err

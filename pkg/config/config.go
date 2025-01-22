@@ -6,10 +6,24 @@ package config
 
 import (
 	"errors"
-	"gopkg.in/yaml.v2"
 	"io"
 	"os"
+
+	"gopkg.in/yaml.v2"
 )
+
+type Config struct {
+	filename    string
+	Log         Log    `yaml:"log"`
+	StoragePath string `yaml:"storage_path"`
+}
+
+type Log struct {
+	Output   string `yaml:"output"`
+	Level    string `yaml:"level"`
+	Rotation int    `yaml:"rotation"`
+	MaxAge   int    `yaml:"max_age"`
+}
 
 func Create(filename string) (*Config, error) {
 	fp, err := os.OpenFile(filename, os.O_RDWR|os.O_CREATE, 0644)
@@ -22,32 +36,20 @@ func Create(filename string) (*Config, error) {
 			return
 		}
 	}(fp)
-	
+
 	cfg := new(Config)
 	cfg.filename = filename
 	if err := cfg.loadDefault(); err != nil {
 		return nil, err
 	}
-	
+
 	if data, err := io.ReadAll(fp); err != nil {
 		return nil, err
 	} else if err := yaml.Unmarshal(data, cfg); err != nil {
 		return nil, err
 	}
-	
-	return cfg, nil
-}
 
-type Config struct {
-	filename string
-	// 配置项
-	Log struct {
-		Output   string `yaml:"output"`
-		Level    string `yaml:"level"`
-		Rotation int    `yaml:"rotation"`
-		MaxAge   int    `yaml:"max_age"`
-	} `yaml:"log"`
-	StoragePath string `yaml:"storage_path"`
+	return cfg, nil
 }
 
 func (c *Config) loadDefault() error {
@@ -56,7 +58,6 @@ func (c *Config) loadDefault() error {
 	c.Log.Rotation = 1
 	c.Log.MaxAge = 7
 	c.StoragePath = "/etc/amcert/storage.db"
-	
 	return nil
 }
 

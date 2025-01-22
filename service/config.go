@@ -7,16 +7,12 @@ package service
 import (
 	"log/slog"
 
+	"github.com/amuluze/amcert/pkg/config"
 	"github.com/spf13/viper"
 )
 
-type Config struct {
-	Log         Log    `yaml:"log"`
-	StoragePath string `yaml:"storagePath"`
-}
-
-func NewConfig(configFile string) (*Config, error) {
-	config := &Config{}
+func NewConfig(configFile string) (*config.Config, error) {
+	config := &config.Config{}
 	viper.SetConfigFile(configFile)
 	if err := viper.ReadInConfig(); err != nil {
 		slog.Error("read config error", "err", err)
@@ -27,11 +23,4 @@ func NewConfig(configFile string) (*Config, error) {
 		return nil, err
 	}
 	return config, nil
-}
-
-type Log struct {
-	Output   string `yaml:"output"`
-	Level    string `yaml:"level"`
-	Rotation int    `yaml:"rotation"`
-	MaxAge   int    `yaml:"maxAge"`
 }

@@ -73,7 +73,7 @@ func generateSSL() error {
 	certificate := cert.NewCertificate(&conf)
 
 	// ensure cache dir exists
-	if err := os.MkdirAll(filepath.Dir(Path), os.ModePerm); err != nil {
+	if err := os.MkdirAll(Path, os.ModePerm); err != nil {
 		fmt.Printf("Error creating cache dir failed: %v\n", err)
 		return err
 	}

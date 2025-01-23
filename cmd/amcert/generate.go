@@ -49,11 +49,11 @@ func generateSSL() error {
 	Email, _ := reader.ReadString('\n')
 	Email = strings.TrimSpace(Email)
 
-	fmt.Print("Please enter contact certificate path: ")
+	fmt.Print("Please enter certificate save path: ")
 	Path, _ := reader.ReadString('\n')
 	Path = strings.TrimSpace(Path)
 
-	fmt.Print("Please enter contact domains(split by comma): ")
+	fmt.Print("Please enter domains(split by comma): ")
 	Domains, _ := reader.ReadString('\n')
 	Domains = strings.TrimSpace(Domains)
 
@@ -72,15 +72,21 @@ func generateSSL() error {
 	}
 	certificate := cert.NewCertificate(&conf)
 
+	// ensure cache dir exists
+	if err := os.MkdirAll(Path, os.ModePerm); err != nil {
+		fmt.Printf("Error creating cache dir failed: %v\n", err)
+		return err
+	}
+
 	if err := certificate.Generate(); err != nil {
-		slog.Error("generate certificate", "error", err)
+		fmt.Printf("generate certificate failed: %v\n", err)
 		return err
 	}
 
 	// save certificate generate info
 	key := fmt.Sprintf("cert-%s", certificate.Domain)
 	if err := db.PutJson(key, conf); err != nil {
-		slog.Error("Failed to put certificate into database", "error", err)
+		fmt.Printf("Failed to put certificate into database: %v\n", err)
 		return err
 	}
 	return nil

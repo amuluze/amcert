@@ -6,7 +6,7 @@ package main
 
 import (
 	"fmt"
-	"log/slog"
+	"os"
 	"time"
 
 	"github.com/amuluze/amcert/pkg/cert"
@@ -16,7 +16,7 @@ import (
 func runDB(args []string) error {
 	err := db.Initialize("/etc/amcert/storage.db")
 	if err != nil {
-		slog.Error("db initialize failed", "error", err)
+		fmt.Printf("db initialize failed: %v", err)
 		return err
 	}
 
@@ -25,7 +25,7 @@ func runDB(args []string) error {
 	case "keys":
 		keys, err := db.GetPrefixKeys("cert-")
 		if err != nil {
-			slog.Error("get prefix keys failed", "error", err)
+			fmt.Printf("get prefix keys failed: %v", err)
 			return err
 		}
 		fmt.Printf("All keys: %#v\n", keys)
@@ -34,30 +34,51 @@ func runDB(args []string) error {
 		key := args[1]
 		var conf cert.Config
 		if err := db.GetJson(key, &conf); err != nil {
-			slog.Error("get certificate config failed", "error", err)
+			fmt.Printf("get certificate config failed: %v", err)
 			return err
 		}
 		conf.RenewBefore = cert.RenewBefore
 		conf.CheckInterval = time.Duration(cert.CheckInterval) * time.Hour
 		fmt.Printf("Certificate config: %#v\n", conf)
 		return nil
+	case "delete":
+		key := args[1]
+		var conf cert.Config
+		if err := db.GetJson(key, &conf); err != nil {
+			fmt.Printf("get certificate config failed: %v", err)
+			return err
+		}
+		fmt.Printf("Certificate config: %#v\n", conf)
+		if err := db.DeleteKey(key); err != nil {
+			fmt.Printf("delete key failed: %v", err)
+			return err
+		}
+		if _, err := os.Stat(conf.CacheDir); os.IsNotExist(err) {
+			fmt.Printf("%s does not exist", conf.CacheDir)
+		} else {
+			err := os.RemoveAll(conf.CacheDir)
+			if err != nil {
+				fmt.Printf("delete cache dir failed: %v", err)
+				return err
+			}
+		}
 	case "expire":
 		key := args[1]
 		var conf cert.Config
 		if err := db.GetJson(key, &conf); err != nil {
-			slog.Error("get certificate config failed", "error", err)
+			fmt.Printf("get certificate config failed: %v", err)
 			return err
 		}
 		conf.RenewBefore = cert.RenewBefore
 		conf.CheckInterval = time.Duration(cert.CheckInterval) * time.Hour
 		certificate := cert.NewCertificate(&conf)
 		if err := certificate.Load(); err != nil {
-			slog.Error("load certificate failed", "error", err)
+			fmt.Printf("load certificate failed: %v", err)
 			return err
 		}
 		expire, err := certificate.Expire()
 		if err != nil {
-			slog.Error("get certificate expire failed", "error", err)
+			fmt.Printf("get certificate expire failed: %v", err)
 			return err
 		}
 		fmt.Printf("Certificate %s expire: %d\n", certificate.Domain, expire)

@@ -7,7 +7,7 @@ package cert
 const (
 	RenewBefore               = 30 * 24
 	CheckInterval             = 1
-	DefaultContactEmail       = "wangjialong89@yeah.net"
+	DefaultContactEmail       = "example@example.net"
 	UserFileName              = "user.json"
 	DomainFileName            = "domain"
 	CertificateFileName       = "fullchain.pem"

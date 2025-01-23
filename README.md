@@ -1,6 +1,6 @@
 # amcert
 
-cert generate and renew
+简单、轻量、自动化的 SSL 证书管理工具。
 
 ## usage
 
@@ -16,7 +16,7 @@ $ amcert remove   # 移除
 $ amcert setup
 
 # 生成 SSL/TLS 证书
-$ amcert generate ssl/tls
+$ amcert generate ssl
 
 # 查看 SSL 证书相关信息
 $ amcert ssl keys                     # 查看所有证书

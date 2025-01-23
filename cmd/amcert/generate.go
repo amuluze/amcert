@@ -58,7 +58,7 @@ func generateSSL() error {
 	Domains = strings.TrimSpace(Domains)
 
 	fmt.Printf(" *************  ssl certificate generate info  ************* ")
-	fmt.Printf("Email: %s, Path: %s, Domains: %s\n", Email, Path, Domains)
+	fmt.Printf("Email: %s\nPath: %s\nDomains: %s\n", Email, Path, Domains)
 	fmt.Printf(" *********************************************************** ")
 
 	// generate certificate
